@@ -6,10 +6,9 @@ select
   100*round(sum(case when Product_Purchase_Number_ > 1 then 1 else 0 end)/count(*),4) as replenishment_rate
 from
   Trinny.example
-group by
-  1
-order by
-  1
+group by 1
+order by 1
+
 
 
 
@@ -22,10 +21,9 @@ select
  100*round(sum(case when Product_Purchase_Number_ > 1 AND Variant_Purchase_Number > 1 then 1 else 0 end)/count(*),4) as replenishment_rate
 from
  Trinny.example
-group by
- 1
-order by
- 1
+group by 1
+order by 1
+
 
 
 
@@ -40,6 +38,7 @@ with FirstTimePurchases as (
  where
    Order_Row_Number = 1
 ),
+  
 Repurchases as (
  select
    f.Customer_ID,
@@ -47,25 +46,22 @@ Repurchases as (
    count(*) as repurchase_count
  from
    FirstTimePurchases f
- left join
-   `Trinny.example` t
- on
-   f.Customer_ID = t.Customer_ID
-   and f.product_name = t.product_name
-   and t.order_row_number = 2
- group by
-   f.customer_id,
-   f.product_name
+ left join `Trinny.example` t
+ on f.Customer_ID = t.Customer_ID
+    and f.product_name = t.product_name
+    and t.order_row_number = 2
+ group by f.customer_id, f.product_name
 ),
+  
 TotalPurchases as (
  select
    Product_name,
    count(*) as total_purchases
  from
    `Trinny.example`
- group by
-   1
+ group by 1
 )
+  
 select
  r.product_name,
  count(*) as total_first_time_purchases,
@@ -74,12 +70,9 @@ select
  sum (case when r.repurchase_count = 1 then 1 else 0 end) / t.total_purchases as proportion_repurchased
 from
  Repurchases r
-left join
- TotalPurchases t
-on
- r.product_name = t.product_name
-group by
- r.product_name, t.total_purchases
+left join TotalPurchases t
+on r.product_name = t.product_name
+group by r.product_name, t.total_purchases
 
 
 
@@ -92,6 +85,7 @@ with TrinnySet as (
  from
    `Trinny.example`
 ),
+  
 FirstTimePurchases as (
  select
    customer_id,
@@ -101,6 +95,7 @@ FirstTimePurchases as (
  where
    order_row_number = 1
 ),
+  
 Repurchases as (
  select
    f.customer_id,
@@ -108,24 +103,20 @@ Repurchases as (
    count(*) as repurchase_count
  from
    FirstTimePurchases f
- left join
-   TrinnySet t
- on
-   f.customer_id = t.customer_id
-   and f.product_variant = t.product_variant
-   and t.order_row_number = 2
- group by
-   f.customer_id,
-   f.product_variant
+ left join TrinnySet t
+ on f.customer_id = t.customer_id
+    and f.product_variant = t.product_variant
+    and t.order_row_number = 2
+ group by f.customer_id, f.product_variant
 ),
+  
 TotalPurchases as (
  select
    product_variant,
    count(*) as total_purchases
  from
    TrinnySet
- group by
-   product_variant
+ group by product_variant
 )
 select
  r.product_variant,
@@ -135,12 +126,9 @@ select
  sum (case when r.repurchase_count = 1 then 1 else 0 end) / t.total_purchases as proportion_repurchased
 from
  Repurchases r
-left join
- TotalPurchases t
-on
- r.product_variant = t.product_variant
-group by
- r.product_variant, t.total_purchases
+left join TotalPurchases t
+on r.product_variant = t.product_variant
+group by r.product_variant, t.total_purchases
 
 
 
