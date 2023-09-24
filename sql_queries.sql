@@ -3,7 +3,7 @@ select
   Product_Name,
   sum(case when Product_Purchase_Number_ > 1 then 1 else 0 end) as replenished,
   count(*) as total_ordered,
-  100*round(sum(case when Product_Purchase_Number_ > 1 then 1 else 0 end)/count(*),4) as replenishment_rate
+  sum(case when Product_Purchase_Number_ > 1 then 1 else 0 end)/count(*) as replenishment_rate
 from
   Trinny.example
 group by 1
@@ -16,13 +16,13 @@ order by 1
 -- Q1 Replenishment Rates for Product Variants
 select
  concat(Product_Name, ' ', Variant_Name) as product_variant,
- sum(case when Product_Purchase_Number_ > 1 AND Variant_Purchase_Number > 1 then 1 else 0 end) as replenished,
+ sum(case when Variant_Purchase_Number > 1 then 1 else 0 end) as replenished,
  count(*) as total_ordered,
- 100*round(sum(case when Product_Purchase_Number_ > 1 AND Variant_Purchase_Number > 1 then 1 else 0 end)/count(*),4) as replenishment_rate
+ sum(case when Variant_Purchase_Number > 1 then 1 else 0 end)/count(*) as replenishment_rate
 from
  Trinny.example
 group by 1
-order by 1
+order by 2 desc, 3 desc, 4 desc
 
 
 
