@@ -118,6 +118,7 @@ TotalPurchases as (
    TrinnySet
  group by product_variant
 )
+  
 select
  r.product_variant,
  count(*) as total_first_time_purchases,
