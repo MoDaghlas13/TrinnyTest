@@ -1,2 +1,2 @@
 # TrinnyTest
-Example Dataset for Trinny London Technical task
+Trinny London Technical task
