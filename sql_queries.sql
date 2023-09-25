@@ -28,6 +28,8 @@ order by 2 desc, 3 desc, 4 desc
 
 
 -- Q2 Repurchase Rate by Product
+
+--First time purchase customers
 WITH FirstTimePurchases AS (
     SELECT
         Customer_ID,
@@ -38,6 +40,7 @@ WITH FirstTimePurchases AS (
         Product_Purchase_Number_ = 1
 ),
 
+--Repurchasing customers
 Repurchases AS (
     SELECT
         f.Customer_ID,
@@ -52,10 +55,11 @@ Repurchases AS (
     GROUP BY f.customer_id, f.product_name
 ),
 
+--Total customers
 TotalPurchases AS (
     SELECT
         Product_name,
-        COUNT(*) AS total_purchases
+        COUNT(distinct customer_id) AS total_purchases
     FROM
         `Trinny.example`
     GROUP BY 1
@@ -63,9 +67,9 @@ TotalPurchases AS (
 
 SELECT
     r.product_name,
-    COUNT(*) AS total_first_time_purchases,
-    SUM(CASE WHEN r.repurchase_count = 1 THEN 1 ELSE 0 END) AS repurchase_count,
-    t.total_purchases,
+    COUNT(*) AS first_time_purchase_customers,
+    SUM(CASE WHEN r.repurchase_count = 1 THEN 1 ELSE 0 END) AS repurchase_customers,
+    t.total_purchases as total_customers,
     SUM(CASE WHEN r.repurchase_count = 1 THEN 1 ELSE 0 END) / t.total_purchases AS repurchase_rate
 FROM
     Repurchases r
@@ -112,7 +116,7 @@ Repurchases as (
 TotalPurchases as (
  select
    product_variant,
-   count(*) as total_purchases
+   count(distinct customer_id) as total_purchases
  from
    TrinnySet
  group by product_variant
@@ -129,6 +133,7 @@ from
 left join TotalPurchases t
 on r.product_variant = t.product_variant
 group by r.product_variant, t.total_purchases
+
 
 
 
